@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import Response
-from src.api import utils, contacts
+from src.api import utils, contacts, auth_router
+
 
 app = FastAPI()
 
@@ -14,7 +15,7 @@ async def read_root():
 async def favicon():
     return Response(status_code=204)
 
-
+app.include_router(auth_router.router, prefix="/auth")
 app.include_router(utils.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
 
