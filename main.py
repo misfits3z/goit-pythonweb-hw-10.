@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import Response
-from src.api import utils, contacts, auth_router
+from src.api import utils, contacts, auth_router, users
 
 
 app = FastAPI()
@@ -18,6 +18,7 @@ async def favicon():
 app.include_router(auth_router.router, prefix="/auth")
 app.include_router(utils.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
