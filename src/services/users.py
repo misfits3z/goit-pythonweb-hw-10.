@@ -4,6 +4,10 @@ from libgravatar import Gravatar
 from src.repository.users import UserRepository
 from src.schemas import UserCreate
 
+import smtplib
+from email.mime.text import MIMEText
+from src.conf.config import config
+
 
 class UserService:
     def __init__(self, db: AsyncSession):
@@ -27,3 +31,15 @@ class UserService:
 
     async def get_user_by_email(self, email: str):
         return await self.repository.get_user_by_email(email)
+    
+    async def send_verification_email(email: str, token: str):
+        verify_link = f"http://localhost:8000/api/auth/verify-email?token={token}"
+        msg = MIMEText(f"Click to verify your email: {verify_link}")
+        msg["Subject"] = "Email Verification"
+        msg["From"] = config.SMTP_USERNAME
+        msg["To"] = email
+
+        with smtplib.SMTP(config.SMTP_SERVER, config.SMTP_PORT) as server:
+            server.starttls()
+            server.login(config.SMTP_USERNAME, config.SMTP_PASSWORD)
+            server.sendmail(config.SMTP_USERNAME, email, msg.as_string())

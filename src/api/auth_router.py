@@ -5,6 +5,8 @@ from src.schemas import UserCreate, Token, User
 from src.services.auth import create_access_token, Hash
 from src.services.users import UserService
 from src.database.db import get_db
+from src.conf.config import config
+from jose import jwt, JWTError
 
 router  = APIRouter(tags=["auth"])
 
@@ -30,6 +32,9 @@ async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     user_data.password = Hash().get_password_hash(user_data.password)
     new_user = await user_service.create_user(user_data)
 
+    token = await generate_verification_token(user_data.email)
+    await send_verification_email(user_data.email, token)
+
     return new_user
 
 
@@ -49,3 +54,23 @@ async def login_user(
 
     access_token = await create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/verify-email")
+async def verify_email(token: str, db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(
+            token, config.JWT_SECRET, algorithms=[config.JWT_ALGORITHM]
+        )
+        email = payload["sub"]
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    user_service = UserService(db)
+    user = await user_service.get_user_by_email(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.is_verified = True  # Підтверджуємо email
+    await db.commit()
+    return {"message": "Email successfully verified"}
