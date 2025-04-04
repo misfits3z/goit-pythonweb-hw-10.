@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import Response
 from src.api import utils, contacts, auth_router, users
+import os
 
 
 app = FastAPI()
@@ -20,7 +21,10 @@ app.include_router(utils.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 
+HOST = os.getenv("HOST", "127.0.0.1")
+PORT = int(os.getenv("PORT", 8000))
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host=HOST, port=PORT)
