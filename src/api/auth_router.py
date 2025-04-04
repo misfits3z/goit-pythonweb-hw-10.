@@ -8,6 +8,8 @@ from src.database.db import get_db
 from src.conf.config import config
 from jose import jwt, JWTError
 
+
+
 router  = APIRouter(tags=["auth"])
 
 
@@ -31,9 +33,6 @@ async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         )
     user_data.password = Hash().get_password_hash(user_data.password)
     new_user = await user_service.create_user(user_data)
-
-    token = await generate_verification_token(user_data.email)
-    await send_verification_email(user_data.email, token)
 
     return new_user
 
