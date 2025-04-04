@@ -6,7 +6,7 @@ from src.services.auth import create_access_token, Hash
 from src.services.users import UserService
 from src.database.db import get_db
 
-router  = APIRouter(prefix="/auth", tags=["auth"])
+router  = APIRouter(tags=["auth"])
 
 
 # Реєстрація користувача
