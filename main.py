@@ -4,7 +4,7 @@ from src.api import utils, contacts, auth_router, users
 import os
 
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 
 @app.get("/")
