@@ -4,6 +4,9 @@ FROM python:3.12-slim
 # Встановлюємо Poetry
 RUN pip install --no-cache-dir poetry
 
+# Додаємо poetry до PATH (якщо треба)
+ENV PATH="/root/.local/bin:$PATH"
+
 # Створюємо директорію для застосунку
 WORKDIR /app
 
@@ -11,7 +14,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 
 # Встановлюємо залежності
-RUN poetry install --only main --no-root
+RUN poetry install --no-root
 
 # Копіюємо код проєкту
 COPY . .

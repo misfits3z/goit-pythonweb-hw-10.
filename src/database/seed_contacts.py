@@ -1,7 +1,8 @@
+from src.database.db import sessionmanager
 import asyncio
 from datetime import date
-from db import sessionmanager 
-from models import Contact
+
+from src.database.models import Contact
 
 
 async def seed_contacts():
